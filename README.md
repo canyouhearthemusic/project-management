@@ -29,8 +29,8 @@ make build && make up
 ```
 
 ## Endpoints (`/api/v1`)
-https://project-management-9yzv.onrender.com/swagger/index.html 
+https://project-management-82r5.onrender.com/swagger/index.html 
 
 
 ## Health status check
-https://project-management-9yzv.onrender.com/api/v1/heartbeat
+https://project-management-82r5.onrender.com/api/v1/heartbeat
