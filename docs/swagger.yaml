@@ -1,0 +1,625 @@
+basePath: /api/v1/
+definitions:
+  project.Request:
+    properties:
+      description:
+        type: string
+      finished_at:
+        type: string
+      manager_id:
+        type: string
+      started_at:
+        type: string
+      title:
+        type: string
+    type: object
+  project.Response:
+    properties:
+      description:
+        type: string
+      finished_at:
+        type: string
+      id:
+        type: string
+      manager_id:
+        type: string
+      started_at:
+        type: string
+      title:
+        type: string
+    type: object
+  project.UpdateRequest:
+    properties:
+      description:
+        type: string
+      finished_at:
+        type: string
+      manager_id:
+        type: string
+      title:
+        type: string
+    type: object
+  response.Response:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  task.Request:
+    properties:
+      author_id:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      done_at:
+        type: string
+      priority:
+        type: string
+      project_id:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+    type: object
+  task.Response:
+    properties:
+      author_id:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      done_at:
+        type: string
+      id:
+        type: string
+      priority:
+        type: string
+      project_id:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+    type: object
+  task.UpdateRequest:
+    properties:
+      author_id:
+        type: string
+      description:
+        type: string
+      done_at:
+        type: string
+      priority:
+        type: string
+      project_id:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+    type: object
+  user.Request:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      registration_date:
+        type: string
+      role:
+        type: string
+    type: object
+  user.Response:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      registration_date:
+        type: string
+      role:
+        type: string
+    type: object
+  user.UpdateRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+    type: object
+info:
+  contact: {}
+  title: Project Management API
+  version: 1.0.0
+paths:
+  /heartbeat:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Health-Check
+      tags:
+      - Heartbeat
+  /projects:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/project.Response'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            type: string
+      summary: All projects
+      tags:
+      - Project endpoints
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Project request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/project.Request'
+      responses:
+        "201":
+          description: Response
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Validation errors
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create a project
+      tags:
+      - Project endpoints
+  /projects/{id}:
+    delete:
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Project deleted
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+      summary: Delete a project
+      tags:
+      - Project endpoints
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Project UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/project.Response'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+      summary: Get a project
+      tags:
+      - Project endpoints
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Project UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Project update request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/project.UpdateRequest'
+      responses:
+        "200":
+          description: Project updated
+          schema:
+            type: string
+        "400":
+          description: Validation errors
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Update a project
+      tags:
+      - Project endpoints
+  /projects/{id}/tasks:
+    get:
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/task.Response'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            type: string
+      summary: List project tasks
+      tags:
+      - Project endpoints
+  /projects/search:
+    get:
+      description: Use either name or email query string
+      parameters:
+      - description: Search by Name
+        in: query
+        name: name
+        type: string
+      - description: Search by Email
+        in: query
+        name: email
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/project.Response'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+      summary: Search projects
+      tags:
+      - Project endpoints
+  /tasks:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/task.Response'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            type: string
+      summary: All tasks
+      tags:
+      - Task endpoints
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Task request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/task.Request'
+      responses:
+        "201":
+          description: Response
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Validation errors
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create a task
+      tags:
+      - Task endpoints
+  /tasks/{id}:
+    delete:
+      parameters:
+      - description: Task UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Task Deleted
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete a task
+      tags:
+      - Task endpoints
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Task UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "201":
+          description: Response
+          schema:
+            $ref: '#/definitions/task.Response'
+        "400":
+          description: Validation errors
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get a task
+      tags:
+      - Task endpoints
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Task UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task update request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/task.UpdateRequest'
+      responses:
+        "200":
+          description: Task updated
+          schema:
+            type: string
+        "400":
+          description: Validation errors
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Update a task
+      tags:
+      - Task endpoints
+  /tasks/search:
+    get:
+      description: You can find a tasks by title, priority, status, author_id, project_id
+      parameters:
+      - description: Search by Title
+        in: query
+        name: title
+        type: string
+      - description: Search by Priority
+        in: query
+        name: priority
+        type: string
+      - description: Search by Status
+        in: query
+        name: status
+        type: string
+      - description: Search by Author UUID
+        in: query
+        name: author_id
+        type: string
+      - description: Search by Project UUID
+        in: query
+        name: project_id
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/task.Response'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+      summary: Search tasks
+      tags:
+      - Project endpoints
+  /users:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/user.Response'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            type: string
+      summary: All users
+      tags:
+      - User endpoints
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.Request'
+      responses:
+        "201":
+          description: Response
+          schema:
+            $ref: '#/definitions/user.Response'
+        "400":
+          description: Validation errors
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create a user
+      tags:
+      - User endpoints
+  /users/{id}:
+    delete:
+      parameters:
+      - description: User UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: User Deleted
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete a user
+      tags:
+      - User endpoints
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: User UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "201":
+          description: Response
+          schema:
+            $ref: '#/definitions/user.Response'
+        "400":
+          description: Validation errors
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get a user
+      tags:
+      - User endpoints
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: User UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User update request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateRequest'
+      responses:
+        "200":
+          description: User updated
+          schema:
+            type: string
+        "400":
+          description: Validation errors
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Update a user
+      tags:
+      - User endpoints
+  /users/{id}/tasks:
+    get:
+      parameters:
+      - description: User UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/task.Response'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            type: string
+      summary: All tasks of user
+      tags:
+      - User endpoints
+  /users/search:
+    get:
+      description: You can find a users by name or email
+      parameters:
+      - description: Search by Name
+        in: query
+        name: name
+        type: string
+      - description: Search by Email
+        in: query
+        name: email
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/user.Response'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+      summary: Search users
+      tags:
+      - User endpoints
+swagger: "2.0"

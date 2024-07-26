@@ -1,0 +1,54 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "$APP_PORT:$APP_PORT"
+
+    env_file:
+      - .env
+
+    depends_on:
+      db:
+        condition: service_healthy
+  
+  
+  db:
+    image: postgres:16.3
+    
+    ports:
+      - "5432:5432"
+    
+    env_file:
+      - .env
+    
+    environment:
+      - POSTGRES_USER=$DB_USERNAME
+      - POSTGRES_DB=$DB_NAME
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+    
+    healthcheck:
+      test: pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB
+      interval: 3s
+      timeout: 5s
+      retries: 5
+    
+    restart: always
+
+
+  migrate:
+    image: migrate/migrate
+    
+    volumes:
+      - ./migrations/postgres:/migrations
+    
+    command: -path=/migrations/ -database=postgres://$DB_USERNAME:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME?sslmode=disable up
+    
+    env_file:
+      - .env
+    
+    depends_on:
+      db:
+        condition: service_healthy
